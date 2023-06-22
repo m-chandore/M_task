@@ -1,9 +1,19 @@
-import React from 'react'
+import React, {useContext}from 'react'
 import { NavLink } from 'react-router-dom'
-import Login from './buttons/Login'
-import Favorite from './buttons/Favorite'
-import Cart from './buttons/Cart'
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './context/AuthContext';
+
+
 const Header = () => {
+    
+        const navigate = useNavigate();
+        const { isAuthenticated, logout } = useContext(AuthContext);
+      
+        const handleLogout = () => {
+          logout();
+          navigate('/');
+        };
+
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -20,11 +30,22 @@ const Header = () => {
                             <li className="nav-item">
                                 <NavLink className="nav-link" activeclassname="active" to="/Product">Product</NavLink>
                             </li>
-                       
-                        <NavLink className="nav-link "  activeclassname="active" to="/buttons/Login">Login</NavLink><hr/>
+{/*                        
+                        <NavLink className="nav-link "  activeclassname="active" to="/buttons/Login">Login</NavLink><hr/> */}
                         <NavLink className="nav-link" activeclassname="active" to="/buttons/Favorite">Favorite</NavLink>
                         <NavLink className="nav-link" activeclassname="active" to="/buttons/Cart">Cart</NavLink>
-                        
+                        <ul>
+         
+          {!isAuthenticated ? (
+            <>
+              <NavLink className="nav-link "  activeclassname="active" to="/buttons/Login">Login</NavLink>
+            </>
+          ) : (
+            <li>
+              <button onClick={handleLogout}>Logout</button>
+            </li>
+          )}
+        </ul>
                         </ul>
                     </div>
                 </div>

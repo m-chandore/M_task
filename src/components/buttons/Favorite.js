@@ -1,26 +1,29 @@
-import React from 'react'
-import { useState } from 'react';
-const Favorite = () => {
-    const [isFavorite, setIsFavorite] = useState(false);
+import React, { useContext } from 'react';
+import { FavoriteContext } from '../context/FavoriteContext';
 
-  function toggleFavorite() {
-    setIsFavorite(!isFavorite);
-  }
+const Favorite = () => {
+  const { favoriteProducts, removeFavoriteProduct} = useContext(FavoriteContext);
+  
+  const handleRemove = (productId) => {
+    removeFavoriteProduct(productId);
+  };
+
 
   return (
-    <div className="add-to-favorites">
-      <button
-        className={`favorite-button ${isFavorite ? 'active' : ''}`}
-        onClick={toggleFavorite}
-      >
-        {isFavorite ? (
-          <i className="fa fa-heart" aria-hidden="true"></i>
-        ) : (
-          <i className="fa fa-heart-o" aria-hidden="true"></i>
-        )}
-        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-      </button>
-    </div>)
-}
+    <div>
+      <h1>Favorite Products</h1>
+      <ul>
+        {favoriteProducts.map((productId) => (
+          <li key={productId}>Product ID: {productId}
+           <br/>
+          <button onClick={() => handleRemove(productId)}>Remove</button>
+          <hr/>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
-export default Favorite
+export default Favorite;
+

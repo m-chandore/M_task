@@ -1,47 +1,81 @@
-import React, { useState } from 'react';
+import './Login.css'
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  async function login() {
-    let item = { email, password };
-    console.log(item);
-    let result = await fetch("https://dummyjson.com/auth/login", {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(item)
-    });
-    result = await result.json();
-    localStorage.setItem("user-fname", JSON.stringify(result.data[0].first_name));
-    localStorage.setItem("user-lname", JSON.stringify(result.data[0].last_name));
-    localStorage.setItem("user-email", JSON.stringify(result.data[0].email));
-    localStorage.setItem("user-token", JSON.stringify(result.token));
-    if (result.statuscode === true) {
-      navigate('/Buttons/Cart', { replace: true });
-    } else {
-      alert(result.message);
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handleLogin = async () => {
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      return;
     }
-  }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('https://dummyjson.com/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const { firstName, lastName, email, token, id } = responseData;
+
+        localStorage.setItem('user-fname', JSON.stringify(firstName));
+        localStorage.setItem('user-lname', JSON.stringify(lastName));
+        localStorage.setItem('user-email', JSON.stringify(email));
+        localStorage.setItem('user-token', JSON.stringify(token));
+        localStorage.setItem('user-id', JSON.stringify(id));
+
+        login({ firstName, lastName, email, token, id });
+
+        setLoading(false);
+        navigate('/Product');
+      } else {
+        setError('Invalid username or password');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error occurred during login:', error);
+      setError('An error occurred during login');
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <h1>Login page</h1>
-      <div>
-        <input type='text' value={email} placeholder="email" onChange={(e) => setEmail(e.target.value)} className='form-control' />
-        <br />
-        <input type='password' value={password} placeholder="password" onChange={(e) => setPassword(e.target.value)} className='form-control' />
-        <br />
-        <button onClick={login} className='btn btn-primary'>Login</button>
-      </div>
-    </>
-  )
-}
+    <div>
+      <h2>Login</h2>
+      <input type="text" value={username} onChange={handleUsernameChange} placeholder="Username" />
+      <input type="password" value={password} onChange={handlePasswordChange} placeholder="Password" />
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+};
 
 export default Login;
+
+
 

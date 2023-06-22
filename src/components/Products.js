@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { NavLink } from 'react-router-dom';
+import { FavoriteContext } from './context/FavoriteContext';
 
-// import handleCart from './redux/action/reducer/handleCart';
 
 
 const Products = () => {
+  const { addToFavorites } = useContext(FavoriteContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
   
-  
-
   
   useEffect(() => {
     let componentMounted = true;
@@ -30,7 +28,6 @@ const Products = () => {
     };
 
 
-
     getProducts();     
 
     return () => {
@@ -38,11 +35,7 @@ const Products = () => {
     };
   }, []);
 
-  const addToFavorites = (productId) => {
-    // Logic to add product to favorites
-    console.log(`Add to favorites: ${productId}`);
-  };
-
+  
   const ShowProducts = () => {
     // console.log(data); // Log the value of data to check its content
     // console.log(typeof data); // Log the type of data to verify it is an array
@@ -54,10 +47,10 @@ const Products = () => {
     return (
       <>
         {data.map((product) => (
-          <div className='col-md-3' key={product.id}>
+          <div className='col-md-3'  key={product.id}>
             <div className="card" style={{ width: '18rem' }}>
-              <img src={product.images[0]} className="card-img-top" alt={product.title} style={{ objectFit: 'cover', height: '200px' }} />
-              <div className="card-body">
+              <img src={product.images[0]} className="card-img-top" alt={product.title} style={{ objectFit: 'cover', height: '300px' }} />
+              <div className="card-body"  >
                 <h5 className="card-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.title}</h5>
                 <p className="card-text">
                   ${product.price}
@@ -66,13 +59,13 @@ const Products = () => {
                   <p>Stock: {product.stock}</p>
                   <p>Brand: {product.brand}</p>
                 </p>
-                <NavLink to={`/products/${product.id}`} className='btn btn-primary'>
+                <NavLink to={`/products/${product.id}`} className='btn btn-danger'>
                   View Product
                 </NavLink>
-                <button className="btn btn-primary" onClick={() => addToFavorites(product.id)}>
+                <hr/>
+                <button className="btn btn-danger" onClick={() => addToFavorites(product.id)}>
                   Add to Favorites
                 </button>
-                
               </div>
             </div>
           </div>
@@ -91,8 +84,8 @@ const Products = () => {
       <div className='row justify-content-center'>
         {loading ? <div>Loading...</div> : <ShowProducts />}
       </div>
-      
     </div>
+    
   );
 };
 
